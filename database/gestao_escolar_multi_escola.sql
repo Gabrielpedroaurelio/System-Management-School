@@ -143,8 +143,17 @@ CREATE TABLE courses ( -- cursos específicos dentro de uma área de formação
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- melhorar a logica das nota com outra tabela...
-
-
+create table matrix_grade(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    course_id UUID NOT NULL REFERENCES courses(id),
+    education_level_id int not null references education_levels(id),
+    status boolean default true,
+    description text,
+    year int not null,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 
 
@@ -154,6 +163,14 @@ CREATE TABLE subjects (
     course_id   UUID NOT NULL REFERENCES courses(id),
     name        VARCHAR(150) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+create table matrix_subject(
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_matrix_grade UUID NOT NULL REFERENCES matrix_grade(id),
+    subject_id UUID NOT NULL REFERENCES subjects(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE rooms (
@@ -263,11 +280,11 @@ CREATE TABLE enrollments (
     school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
     student_id       UUID NOT NULL REFERENCES students(id),
     classroom_id     UUID NOT NULL REFERENCES classrooms(id),
-    status           VARCHAR(50) DEFAULT 'Activo' CHECK (status IN ('Activo','Transferido','Desistiu','Concluiu')),
+    status           VARCHAR(50) DEFAULT 'Activo' CHECK (status IN ('Activo','Transferido','Desistiu','Concluiu','Banido')),
     enrolled_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (student_id, academic_year_id)                  -- um aluno por ano letivo
 );
-alter table students add  COLUMN id_enrollment references enrollments(id);
+-- alter table students add  COLUMN id_enrollment UUID REFERENCES enrollments(id);
 -- ============================================================
 -- DOMÍNIO: PROFESSORES / DISCIPLINAS
 -- ============================================================

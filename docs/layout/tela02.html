@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Lista de Alunos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;}
+.lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;}
+.mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;}
+.ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.sub{padding-left:44px;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;}
+.ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;}
+.tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.page-hd-left .pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;}
+.breadcrumb a{color:#7c3aed;text-decoration:none;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:20px;}
+.table-controls{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.search-tbl{background:#f4f6fb;border:1px solid #e5e7eb;border-radius:9px;display:flex;align-items:center;gap:7px;padding:7px 12px;flex:1;max-width:280px;}
+.search-tbl input{border:none;background:transparent;outline:none;font-size:13px;color:#374151;width:100%;}
+.search-tbl i{color:#9ca3af;font-size:12px;}
+.filter-btn{background:#f4f6fb;border:1px solid #e5e7eb;border-radius:9px;padding:7px 14px;font-size:13px;color:#6b7280;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.filter-select{background:#f4f6fb;border:1px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#6b7280;outline:none;cursor:pointer;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{text-align:left;padding:10px 12px;color:#9ca3af;font-weight:600;font-size:11.5px;border-bottom:1px solid #f0f0f0;white-space:nowrap;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:11px 12px;color:#374151;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+.av-row{display:flex;align-items:center;gap:9px;}
+.av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;}
+.status-badge{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+.st-active{background:#f0fdf4;color:#22c55e;}
+.st-transfer{background:#fff7ed;color:#f97316;}
+.st-inactive{background:#f9fafb;color:#9ca3af;}
+.action-btns{display:flex;gap:8px;}
+.action-btns button{width:28px;height:28px;border-radius:7px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.action-btns button:hover{border-color:#7c3aed;color:#7c3aed;}
+.action-btns .del:hover{border-color:#ef4444;color:#ef4444;}
+.pagination{display:flex;align-items:center;gap:6px;margin-top:20px;justify-content:center;}
+.pg-btn{width:32px;height:32px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.pg-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed;font-weight:700;}
+.pg-btn:hover:not(.active){border-color:#7c3aed;color:#7c3aed;}
+.pg-info{font-size:12px;color:#9ca3af;margin-left:auto;}
+input[type=checkbox]{accent-color:#7c3aed;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi act"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-down ml-a"></i></div>
+    <div class="mi sub act"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Todos os Alunos</div>
+    <div class="mi sub"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Detalhes</div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div><i class="fa-solid fa-chevron-down" style="font-size:10px;color:#9ca3af;margin-left:4px;"></i></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div class="page-hd-left">
+        <div class="pt">Lista de Alunos</div>
+        <div class="breadcrumb"><a href="#">Início</a> / Alunos</div>
+      </div>
+      <button class="btn-primary"><i class="fa-solid fa-plus"></i> Adicionar Aluno</button>
+    </div>
+    <div class="card">
+      <div class="table-controls">
+        <div class="search-tbl"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="Pesquisar por nome ou matrícula…"/></div>
+        <div class="filter-btn"><i class="fa-solid fa-filter"></i> Filtrar</div>
+        <select class="filter-select"><option>Todas as Turmas</option><option>10ª A Manhã</option><option>11ª B Tarde</option><option>12ª C Manhã</option></select>
+        <select class="filter-select"><option>Todos os Status</option><option>Activo</option><option>Transferido</option><option>Inactivo</option></select>
+        <div class="filter-btn" style="margin-left:auto;"><i class="fa-regular fa-calendar"></i> Últimos 30 dias <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox"/></th>
+            <th>Nome do Aluno</th>
+            <th>Nº Matrícula</th>
+            <th>Turma</th>
+            <th>Endereço</th>
+            <th>Data de Nasc.</th>
+            <th>Telefone</th>
+            <th>Status</th>
+            <th>Acção</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av">EP</div><div><div style="font-weight:600">Eleanor Pena</div><div style="font-size:11px;color:#9ca3af;">eleanor@email.com</div></div></div></td><td>#MAT43178</td><td>10ª A Manhã</td><td>Luanda, Ingombota</td><td>02/05/2005</td><td>+244 923 456 789</td><td><span class="status-badge st-active">Activo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox" checked/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f97316,#fb923c)">JR</div><div><div style="font-weight:600">Jessia Rosa</div><div style="font-size:11px;color:#9ca3af;">jessia@email.com</div></div></div></td><td>#MAT43174</td><td>10ª B Tarde</td><td>Luanda, Viana</td><td>03/04/2004</td><td>+244 912 345 678</td><td><span class="status-badge st-active">Activo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JW</div><div><div style="font-weight:600">Jenny Wilson</div><div style="font-size:11px;color:#9ca3af;">jenny@email.com</div></div></div></td><td>#MAT43190</td><td>11ª A Manhã</td><td>Luanda, Cazenga</td><td>12/05/2003</td><td>+244 934 567 890</td><td><span class="status-badge st-transfer">Transferido</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">GH</div><div><div style="font-weight:600">Guy Hawkins</div><div style="font-size:11px;color:#9ca3af;">guy@email.com</div></div></div></td><td>#MAT43183</td><td>12ª A Manhã</td><td>Luanda, Kilamba</td><td>03/05/2003</td><td>+244 945 678 901</td><td><span class="status-badge st-active">Activo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">JJ</div><div><div style="font-weight:600">Jacob Jones</div><div style="font-size:11px;color:#9ca3af;">jacob@email.com</div></div></div></td><td>#MAT43185</td><td>11ª B Tarde</td><td>Luanda, Rangel</td><td>12/05/2003</td><td>+244 956 789 012</td><td><span class="status-badge st-inactive">Inactivo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#0ea5e9,#38bdf8)">JC</div><div><div style="font-weight:600">Jane Cooper</div><div style="font-size:11px;color:#9ca3af;">jane@email.com</div></div></div></td><td>#MAT43180</td><td>10ª C Noite</td><td>Luanda, Sambizanga</td><td>12/03/2005</td><td>+244 967 890 123</td><td><span class="status-badge st-active">Activo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+          <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f59e0b,#fcd34d)">FM</div><div><div style="font-weight:600">Floyd Miles</div><div style="font-size:11px;color:#9ca3af;">floyd@email.com</div></div></div></td><td>#MAT43181</td><td>12ª B Manhã</td><td>Luanda, Cacuaco</td><td>03/05/2004</td><td>+244 978 901 234</td><td><span class="status-badge st-active">Activo</span></td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button><button class="del"><i class="fa-regular fa-trash-can"></i></button></div></td></tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <button class="pg-btn"><i class="fa-solid fa-chevron-left" style="font-size:10px;"></i></button>
+        <button class="pg-btn active">1</button>
+        <button class="pg-btn">2</button>
+        <button class="pg-btn">3</button>
+        <button class="pg-btn">4</button>
+        <button class="pg-btn">5</button>
+        <span style="font-size:13px;color:#9ca3af;">•••</span>
+        <button class="pg-btn">100</button>
+        <button class="pg-btn"><i class="fa-solid fa-chevron-right" style="font-size:10px;"></i></button>
+        <span class="pg-info">10 por página — 3.480 resultados</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

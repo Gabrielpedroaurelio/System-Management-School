@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Professores</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;} .lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;} .mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;} .ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;} .ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;} .tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;} .breadcrumb a{color:#7c3aed;text-decoration:none;}
+.hd-btns{display:flex;gap:10px;}
+.btn-outline{background:#fff;color:#7c3aed;border:1.5px solid #7c3aed;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.sc{background:#fff;border-radius:13px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid #f0f0f0;}
+.si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.si.v{background:#f5f3ff;color:#7c3aed;} .si.b{background:#eff6ff;color:#3b82f6;}
+.si.g{background:#f0fdf4;color:#22c55e;} .si.o{background:#fff7ed;color:#f97316;}
+.si i{font-size:18px;} .sl{font-size:11px;color:#9ca3af;margin-bottom:2px;}
+.sv{font-size:19px;font-weight:700;color:#1f2937;}
+.filters{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+.filter-select{background:#fff;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#6b7280;outline:none;}
+.view-toggle{display:flex;gap:4px;margin-left:auto;}
+.vt-btn{width:34px;height:34px;border-radius:8px;border:1.5px solid #e5e7eb;background:#fff;color:#9ca3af;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.vt-btn.active{background:#f5f3ff;border-color:#7c3aed;color:#7c3aed;}
+.grid-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.teacher-card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:20px;cursor:pointer;transition:.15s;text-align:center;}
+.teacher-card:hover{box-shadow:0 4px 20px rgba(124,58,237,.1);border-color:#e0d6fc;}
+.tc-av{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;margin:0 auto 12px;}
+.tc-name{font-size:15px;font-weight:700;color:#1e1b4b;margin-bottom:2px;}
+.tc-dept{font-size:12px;color:#9ca3af;margin-bottom:12px;}
+.tc-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px;}
+.tc-tag{background:#f5f3ff;color:#7c3aed;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+.tc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-top:1px solid #f0f0f0;padding-top:12px;}
+.tcs{text-align:center;}
+.tcs .v{font-size:16px;font-weight:700;color:#1e1b4b;} .tcs .l{font-size:10px;color:#9ca3af;}
+.tc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f0;}
+.tc-status{font-size:12px;font-weight:600;} .tc-status.act{color:#22c55e;} .tc-status.ina{color:#ef4444;}
+.tc-actions{display:flex;gap:6px;}
+.tc-btn{width:28px;height:28px;border-radius:7px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.tc-btn:hover{border-color:#7c3aed;color:#7c3aed;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi act"><i class="fa-solid fa-chalkboard-user ico"></i> Professores <i class="fa-solid fa-chevron-down ml-a"></i></div>
+    <div class="mi" style="padding-left:44px;font-size:13px;"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Todos</div>
+    <div class="mi" style="padding-left:44px;font-size:13px;"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Atribuições</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Professores</div><div class="breadcrumb"><a href="#">Início</a> / Professores</div></div>
+      <div class="hd-btns">
+        <button class="btn-outline"><i class="fa-solid fa-file-import"></i> Importar</button>
+        <button class="btn-primary"><i class="fa-solid fa-plus"></i> Novo Professor</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="si v"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="sl">Total Professores</div><div class="sv">142</div></div></div>
+      <div class="sc"><div class="si g"><i class="fa-solid fa-circle-check"></i></div><div><div class="sl">Activos</div><div class="sv">138</div></div></div>
+      <div class="sc"><div class="si b"><i class="fa-solid fa-atom"></i></div><div><div class="sl">Disciplinas Cobertas</div><div class="sv">24</div></div></div>
+      <div class="sc"><div class="si o"><i class="fa-solid fa-layer-group"></i></div><div><div class="sl">Turmas Atribuídas</div><div class="sv">68</div></div></div>
+    </div>
+    <div class="filters">
+      <div class="sb" style="max-width:240px;"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="Pesquisar professor…"/></div>
+      <select class="filter-select"><option>Todos os Departamentos</option><option>Ciências</option><option>Humanidades</option><option>Matemática</option></select>
+      <select class="filter-select"><option>Todos os Status</option><option>Activo</option><option>Inactivo</option></select>
+      <div class="view-toggle">
+        <button class="vt-btn active"><i class="fa-solid fa-grip"></i></button>
+        <button class="vt-btn"><i class="fa-solid fa-list"></i></button>
+      </div>
+    </div>
+    <div class="grid-cards">
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">CM</div>
+        <div class="tc-name">Carlos Mateus</div>
+        <div class="tc-dept">Departamento de Ciências</div>
+        <div class="tc-tags"><span class="tc-tag">Matemática</span><span class="tc-tag">Física</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">4</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">16,8</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status act"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#f97316,#fb923c)">AS</div>
+        <div class="tc-name">Ana Santos</div>
+        <div class="tc-dept">Departamento de Línguas</div>
+        <div class="tc-tags"><span class="tc-tag" style="background:#fff7ed;color:#f97316;">Português</span><span class="tc-tag" style="background:#fff7ed;color:#f97316;">Literatura</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">5</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">17,2</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status act"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JP</div>
+        <div class="tc-name">João Pires</div>
+        <div class="tc-dept">Departamento de Ciências</div>
+        <div class="tc-tags"><span class="tc-tag" style="background:#eff6ff;color:#3b82f6;">Química</span><span class="tc-tag" style="background:#eff6ff;color:#3b82f6;">Biologia</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">3</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">15,9</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status act"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">MF</div>
+        <div class="tc-name">Maria Faria</div>
+        <div class="tc-dept">Departamento de Humanidades</div>
+        <div class="tc-tags"><span class="tc-tag" style="background:#f0fdf4;color:#22c55e;">História</span><span class="tc-tag" style="background:#f0fdf4;color:#22c55e;">Geografia</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">4</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">16,1</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status act"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">RL</div>
+        <div class="tc-name">Rosa Lima</div>
+        <div class="tc-dept">Departamento de Artes</div>
+        <div class="tc-tags"><span class="tc-tag" style="background:#fdf2f8;color:#ec4899;">Ed. Visual</span><span class="tc-tag" style="background:#fdf2f8;color:#ec4899;">Música</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">6</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">17,5</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status act"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Activo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+      <div class="teacher-card">
+        <div class="tc-av" style="background:linear-gradient(135deg,#64748b,#94a3b8)">BN</div>
+        <div class="tc-name">Bruno Neto</div>
+        <div class="tc-dept">Departamento de Economia</div>
+        <div class="tc-tags"><span class="tc-tag" style="background:#f8fafc;color:#64748b;">Economia</span><span class="tc-tag" style="background:#f8fafc;color:#64748b;">Contabilidade</span></div>
+        <div class="tc-stats">
+          <div class="tcs"><div class="v">0</div><div class="l">Turmas</div></div>
+          <div class="tcs"><div class="v">2</div><div class="l">Disciplinas</div></div>
+          <div class="tcs"><div class="v">—</div><div class="l">Média Alunos</div></div>
+        </div>
+        <div class="tc-footer"><span class="tc-status ina"><i class="fa-solid fa-circle" style="font-size:8px;"></i> Inactivo</span><div class="tc-actions"><button class="tc-btn"><i class="fa-regular fa-eye"></i></button><button class="tc-btn"><i class="fa-regular fa-pen-to-square"></i></button><button class="tc-btn" style="color:#ef4444;"><i class="fa-regular fa-trash-can"></i></button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

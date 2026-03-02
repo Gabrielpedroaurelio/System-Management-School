@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Gestão de Utilizadores</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;} .lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;} .mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;} .ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;} .ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;} .tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;} .breadcrumb a{color:#7c3aed;text-decoration:none;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.layout{display:grid;grid-template-columns:1fr 300px;gap:16px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;margin-bottom:16px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.ct{font-size:14px;font-weight:700;color:#1e1b4b;}
+.filters{display:flex;gap:10px;margin-bottom:16px;}
+.filter-select{background:#f4f6fb;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#6b7280;outline:none;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{text-align:left;padding:8px 10px;color:#9ca3af;font-weight:600;font-size:11px;border-bottom:1px solid #f0f0f0;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:9px 10px;color:#374151;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+.av-row{display:flex;align-items:center;gap:9px;}
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0;}
+.role-badge{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+.r-super{background:#fdf2f8;color:#ec4899;}
+.r-admin{background:#f5f3ff;color:#7c3aed;}
+.r-dir{background:#eff6ff;color:#3b82f6;}
+.r-prof{background:#f0fdf4;color:#22c55e;}
+.r-sec{background:#fff7ed;color:#f97316;}
+.r-stu{background:#f9fafb;color:#64748b;}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+.s-on{background:#22c55e;} .s-off{background:#d1d5db;}
+.action-btns{display:flex;gap:6px;}
+.action-btns button{width:27px;height:27px;border-radius:7px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.action-btns button:hover{border-color:#7c3aed;color:#7c3aed;}
+.perm-list{display:flex;flex-direction:column;gap:0;}
+.perm-group{margin-bottom:16px;}
+.perm-group-title{font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #f0f0f0;}
+.perm-item{display:flex;align-items:center;justify-content:space-between;padding:7px 0;}
+.perm-name{font-size:13px;color:#374151;}
+.perm-desc{font-size:11px;color:#9ca3af;}
+.toggle{width:38px;height:20px;border-radius:20px;cursor:pointer;position:relative;flex-shrink:0;transition:.2s;}
+.toggle.on{background:#7c3aed;}
+.toggle.off{background:#d1d5db;}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;transition:.2s;}
+.toggle.on::after{left:20px;}
+.toggle.off::after{left:2px;}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.role-card{background:#f9f9ff;border:1.5px solid #ede9fe;border-radius:10px;padding:12px;cursor:pointer;}
+.role-card.active{background:#f5f3ff;border-color:#7c3aed;}
+.rc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.rc-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.rc-name{font-size:13px;font-weight:700;color:#1e1b4b;}
+.rc-count{font-size:11px;color:#9ca3af;}
+input[type=checkbox]{accent-color:#7c3aed;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi act"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Gestão de Utilizadores & Permissões</div><div class="breadcrumb"><a href="#">Início</a> / Definições / Utilizadores</div></div>
+      <button class="btn-primary"><i class="fa-solid fa-plus"></i> Novo Utilizador</button>
+    </div>
+    <div class="layout">
+      <!-- LEFT: users table -->
+      <div>
+        <div class="card">
+          <div class="ch"><div class="ct">Utilizadores do Sistema</div><div style="font-size:12px;color:#9ca3af;">248 utilizadores</div></div>
+          <div class="filters">
+            <div class="sb" style="max-width:220px;"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="Pesquisar…"/></div>
+            <select class="filter-select"><option>Todos os Papéis</option><option>Super Admin</option><option>Director</option><option>Professor</option><option>Secretário</option><option>Estudante</option></select>
+            <select class="filter-select"><option>Todos os Status</option><option>Activo</option><option>Inactivo</option></select>
+          </div>
+          <table>
+            <thead><tr><th><input type="checkbox"/></th><th>Utilizador</th><th>Email</th><th>Papel</th><th>Último Acesso</th><th>Status</th><th>Acção</th></tr></thead>
+            <tbody>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av">PL</div><div><div style="font-weight:600">Priscila Lima</div><div style="font-size:11px;color:#9ca3af;">Super Admin</div></div></div></td><td>priscila@edu.ao</td><td><span class="role-badge r-super">Super Admin</span></td><td>Agora</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">CM</div><div><div style="font-weight:600">Carlos Mateus</div><div style="font-size:11px;color:#9ca3af;">Professor</div></div></div></td><td>carlos@edu.ao</td><td><span class="role-badge r-prof">Professor</span></td><td>há 2h</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f97316,#fb923c)">AS</div><div><div style="font-weight:600">Ana Santos</div><div style="font-size:11px;color:#9ca3af;">Director Pedagógico</div></div></div></td><td>ana@edu.ao</td><td><span class="role-badge r-dir">Director Ped.</span></td><td>Ontem</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">MS</div><div><div style="font-weight:600">Maria Secretária</div><div style="font-size:11px;color:#9ca3af;">Secretária</div></div></div></td><td>maria@edu.ao</td><td><span class="role-badge r-sec">Secretário</span></td><td>há 1h</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">EH</div><div><div style="font-weight:600">Evelyn Harper</div><div style="font-size:11px;color:#9ca3af;">Estudante</div></div></div></td><td>evelyn@edu.ao</td><td><span class="role-badge r-stu">Estudante</span></td><td>há 3 dias</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#64748b,#94a3b8)">BN</div><div><div style="font-weight:600">Bruno Neto</div><div style="font-size:11px;color:#9ca3af;">Professor</div></div></div></td><td>bruno@edu.ao</td><td><span class="role-badge r-prof">Professor</span></td><td>há 14 dias</td><td><span class="status-dot s-off"></span>Inactivo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+              <tr><td><input type="checkbox"/></td><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">JP</div><div><div style="font-weight:600">João Pires</div><div style="font-size:11px;color:#9ca3af;">Director</div></div></div></td><td>joao@edu.ao</td><td><span class="role-badge r-dir">Director</span></td><td>há 5h</td><td><span class="status-dot s-on"></span>Activo</td><td><div class="action-btns"><button><i class="fa-regular fa-eye"></i></button><button><i class="fa-regular fa-pen-to-square"></i></button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- RIGHT: roles + permissions -->
+      <div>
+        <div class="card">
+          <div class="ch"><div class="ct">Papéis / Roles</div></div>
+          <div class="role-cards">
+            <div class="role-card active">
+              <div class="rc-top"><div class="rc-icon" style="background:#fdf2f8;color:#ec4899;"><i class="fa-solid fa-crown"></i></div><div><div class="rc-name">Super Admin</div><div class="rc-count">2 utilizadores</div></div></div>
+            </div>
+            <div class="role-card">
+              <div class="rc-top"><div class="rc-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="fa-solid fa-shield-halved"></i></div><div><div class="rc-name">Administrador</div><div class="rc-count">5 utilizadores</div></div></div>
+            </div>
+            <div class="role-card">
+              <div class="rc-top"><div class="rc-icon" style="background:#eff6ff;color:#3b82f6;"><i class="fa-solid fa-building-columns"></i></div><div><div class="rc-name">Director</div><div class="rc-count">3 utilizadores</div></div></div>
+            </div>
+            <div class="role-card">
+              <div class="rc-top"><div class="rc-icon" style="background:#f0fdf4;color:#22c55e;"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="rc-name">Professor</div><div class="rc-count">142 utilizadores</div></div></div>
+            </div>
+            <div class="role-card">
+              <div class="rc-top"><div class="rc-icon" style="background:#fff7ed;color:#f97316;"><i class="fa-solid fa-briefcase"></i></div><div><div class="rc-name">Secretário</div><div class="rc-count">8 utilizadores</div></div></div>
+            </div>
+            <div class="role-card">
+              <div class="rc-top"><div class="rc-icon" style="background:#f9fafb;color:#64748b;"><i class="fa-solid fa-user-graduate"></i></div><div><div class="rc-name">Estudante</div><div class="rc-count">3.480 utilizadores</div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Permissões — Super Admin</div></div>
+          <div class="perm-list">
+            <div class="perm-group">
+              <div class="perm-group-title">Alunos</div>
+              <div class="perm-item"><div><div class="perm-name">Ver alunos</div></div><div class="toggle on"></div></div>
+              <div class="perm-item"><div><div class="perm-name">Adicionar / Editar</div></div><div class="toggle on"></div></div>
+              <div class="perm-item"><div><div class="perm-name">Eliminar</div></div><div class="toggle on"></div></div>
+            </div>
+            <div class="perm-group">
+              <div class="perm-group-title">Financeiro</div>
+              <div class="perm-item"><div><div class="perm-name">Ver pagamentos</div></div><div class="toggle on"></div></div>
+              <div class="perm-item"><div><div class="perm-name">Registar pagamentos</div></div><div class="toggle on"></div></div>
+              <div class="perm-item"><div><div class="perm-name">Exportar relatórios</div></div><div class="toggle on"></div></div>
+            </div>
+            <div class="perm-group">
+              <div class="perm-group-title">Avaliações</div>
+              <div class="perm-item"><div><div class="perm-name">Lançar notas</div></div><div class="toggle off"></div></div>
+              <div class="perm-item"><div><div class="perm-name">Aprovar notas</div></div><div class="toggle on"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

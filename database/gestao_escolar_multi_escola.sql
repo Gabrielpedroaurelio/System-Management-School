@@ -47,6 +47,7 @@ create table role(
     description TEXT
 
 );
+
 CREATE TABLE users (
     id_users            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     school_id     UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
@@ -57,11 +58,13 @@ CREATE TABLE users (
     last_login_at datetime,
     created_at    datetime DEFAULT CURRENT_TIMESTAMP
 );
+
 create table permission_user(
     user_id UUID not null references users(id_users),
     permission_id UUID not null references permission(id_permission),
     primary key(user_id,permission_id)
 );
+
 CREATE TABLE login_history (
     id_login_history           BIGSERIAL PRIMARY KEY,
     user_id      UUID NOT NULL REFERENCES users(id_users),
@@ -346,7 +349,9 @@ CREATE TABLE employee_attendance ( -- : faltas dos professores/funcionários
 -- ============================================================
 -- DOMÍNIO: FINANCEIRO
 -- ============================================================
-
+-- ════════════════════════════════════════════
+-- 1. SERVIÇOS (base de tudo)
+-- ════════════════════════════════════════════
 CREATE TABLE services (
     id_services          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     school_id   UUID NOT NULL REFERENCES schools(id_schools_schools) ON DELETE CASCADE,
@@ -354,18 +359,64 @@ CREATE TABLE services (
     price       NUMERIC(12, 2) NOT NULL
 );
 
+CREATE TABLE tuition_fees (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    service_id       UUID NOT NULL REFERENCES services(id), -- aponta para "Propina"
+    education_level  education_level NOT NULL,
+    course_name      VARCHAR(150),
+    academic_year    VARCHAR(9) NOT NULL,
+    monthly_amount   NUMERIC(12, 2) NOT NULL,
+    valid_from       DATE NOT NULL,
+    valid_until      DATE,
+    notes            TEXT,
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (school_id, education_level, course_name, academic_year)
+);
+
+-- ════════════════════════════════════════════
+-- 3. PAGAMENTOS (o que já tinhas + num_months + academic_year)
+-- ════════════════════════════════════════════
 CREATE TABLE payments (
-    id_payments           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id    UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
-    student_id   UUID NOT NULL REFERENCES students(id_students_students),
-    service_id   UUID NOT NULL REFERENCES services(id_services),
-    amount       NUMERIC(12, 2) NOT NULL,
+    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id    UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    student_id   UUID NOT NULL REFERENCES students(id),
+    service_id   UUID NOT NULL REFERENCES services(id),
+    amount       NUMERIC(12, 2) NOT NULL,       -- total pago (ex: 3 × 35.000 = 105.000 Kz)
     payment_date DATE NOT NULL,
     method       VARCHAR(50) CHECK (method IN ('Dinheiro','Transferência','Multicaixa','Outro')),
     reference    VARCHAR(100),
-    recorded_by  UUID REFERENCES employees(id_employees),--traducao: registrado por (funcionário que processou o pagamento)
+    recorded_by  UUID REFERENCES employees(id),
+
+    -- 👇 campos novos para suportar propina mensal
+    num_months      SMALLINT DEFAULT 1,         -- quantos meses pagou (1, 2, 4, 6...)
+    academic_year   VARCHAR(9),                 -- ex: '2024/2025' (NULL se não for propina)
+
     created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ════════════════════════════════════════════
+-- 4. MESES COBERTOS (detalhe do pagamento)
+-- ════════════════════════════════════════════
+CREATE TABLE payment_months (
+    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    payment_id       UUID NOT NULL REFERENCES payments(id) ON DELETE CASCADE,
+    reference_month  SMALLINT NOT NULL CHECK (reference_month BETWEEN 1 AND 12),
+    reference_year   SMALLINT NOT NULL,
+    amount_month     NUMERIC(12, 2) NOT NULL,   -- valor desse mês
+
+    UNIQUE (payment_id, reference_month, reference_year)
+);
+
+-- Evita pagar o mesmo mês duas vezes para o mesmo serviço/aluno
+CREATE UNIQUE INDEX idx_no_duplicate_month
+ON payment_months (reference_month, reference_year)
+WHERE payment_id IN (
+    SELECT id FROM payments
+    -- (esta lógica é reforçada melhor via trigger, se quiseres)
+);
+
 
 -- ============================================================
 -- DOMÍNIO: BIBLIOTECA

@@ -11,7 +11,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- ============================================================
 
 CREATE TABLE schools (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_schools            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name          VARCHAR(200) NOT NULL,
     code          VARCHAR(50)  UNIQUE NOT NULL,          -- código único por escola
     type          VARCHAR(50)  CHECK (type IN ('Ensino Médio', 'Ensino Superior', 'Creche', 'Ensino Secundário','Ensino Primário')),
@@ -29,12 +29,12 @@ CREATE TABLE schools (
 -- DOMÍNIO: UTILIZADORES / AUTENTICAÇÃO
 -- ============================================================
 create table permission(
-    id UUID primary key default gen_random_uuid(),
+    id_permission UUID primary key default gen_random_uuid(),
     permission varchar(100),
     description text
 );
 create table role(
-    id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_role         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     role_name  VARCHAR(50) NOT NULL CHECK (role_name IN (
                       'Super Administrador',       -- acesso a todas as escolas
                       "Administrador da escola",      -- admin de uma escola
@@ -49,25 +49,25 @@ create table role(
 );
 
 CREATE TABLE users (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id     UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_users            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id     UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     email         VARCHAR(150) UNIQUE NOT NULL,
     password_hash TEXT,
-    role         UUID REFERENCES role(id),
+    role         UUID REFERENCES role(id_role),
     active        BOOLEAN DEFAULT TRUE,
-    last_login_at TIMESTAMP,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    last_login_at datetime,
+    created_at    datetime DEFAULT CURRENT_TIMESTAMP
 );
 
 create table permission_user(
-    user_id UUID not null references users(id),
-    permission_id UUID not null references permission(id),
+    user_id UUID not null references users(id_users),
+    permission_id UUID not null references permission(id_permission),
     primary key(user_id,permission_id)
 );
 
 CREATE TABLE login_history (
-    id           BIGSERIAL PRIMARY KEY,
-    user_id      UUID NOT NULL REFERENCES users(id),
+    id_login_history           BIGSERIAL PRIMARY KEY,
+    user_id      UUID NOT NULL REFERENCES users(id_users),
     login_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     logout_at    TIMESTAMP,
     ip_address   inet,
@@ -80,26 +80,26 @@ CREATE TABLE login_history (
 -- ============================================================
 
 CREATE TABLE departments (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_departments          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name        VARCHAR(150) NOT NULL
 );
 create table section(
-    id          UUID PRIMARY KEY DEFAULT,
+    id_section          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     section_name VARCHAR(150) NOT NULL,
-    id_department UUID NOT NULL REFERENCES departments(id)
+    id_department UUID NOT NULL REFERENCES departments(id_departments)
 );
 create table position(
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_position          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     position_name   VARCHAR(150) NOT NULL,
-    id_section   UUID NOT NULL REFERENCES section(id)
+    id_section   UUID NOT NULL REFERENCES section(id_section)
     base_salary NUMERIC(12,2)
 );
 -- tabela funcionario
 CREATE TABLE employees (
-    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id       UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    user_id         UUID REFERENCES users(id),              -- liga ao login
+    id_employees              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id       UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    user_id         UUID REFERENCES users(id_users),              -- liga ao login
     id_card         VARCHAR(20),                             -- bilhete de identidade
     first_name      VARCHAR(100) NOT NULL,
     middle_name      VARCHAR(100) NOT NULL,
@@ -109,8 +109,8 @@ CREATE TABLE employees (
     province        VARCHAR(100),
     municipality    VARCHAR(100),
     neighborhood    VARCHAR(100),
-    position_id     UUID REFERENCES position(id),
-    section_id   UUID REFERENCES section(id),
+    position_id     UUID REFERENCES position(id_position),
+    section_id   UUID REFERENCES section(id_section),
     hire_date       DATE,
     active          BOOLEAN DEFAULT TRUE,
     bio             TEXT,
@@ -118,39 +118,39 @@ CREATE TABLE employees (
 );
 
 -- Diretores da escola (geral e pedagógico)
-ALTER TABLE schools ADD COLUMN director_id          UUID REFERENCES employees(id);
-ALTER TABLE schools ADD COLUMN ped_director_id      UUID REFERENCES employees(id);
+ALTER TABLE schools ADD COLUMN director_id          UUID REFERENCES employees(id_employees);
+ALTER TABLE schools ADD COLUMN ped_director_id      UUID REFERENCES employees(id_employees);
 
 -- ============================================================
 -- DOMÍNIO: ESTRUTURA ACADÉMICA
 -- ============================================================
 
 CREATE TABLE education_levels ( -- clasificação geral do nível de ensino
-    id          SERIAL PRIMARY KEY,
+    id_education_levels          SERIAL PRIMARY KEY,
     name        VARCHAR(100) NOT NULL                       -- Ex: 7ª, 8ª, ... 12ª, 1º Ano
 );
 
 CREATE TABLE training_areas ( --- áreas de formação (útil para ensino superior e médio)
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_training_areas          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name        VARCHAR(150) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE courses ( -- cursos específicos dentro de uma área de formação
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    training_area_id UUID NOT NULL REFERENCES training_areas(id),
+    id_courses               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id        UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    training_area_id UUID NOT NULL REFERENCES training_areas(id_training_areas),
     name             VARCHAR(150) NOT NULL,
     duration_years   INT,
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 -- melhorar a logica das nota com outra tabela...
 create table matrix_grade(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    course_id UUID NOT NULL REFERENCES courses(id),
-    education_level_id int not null references education_levels(id),
+    id_matrix_grade UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    course_id UUID NOT NULL REFERENCES courses(id_courses),
+    education_level_id int not null references education_levels(id_education_levels),
     status boolean default true,
     description text,
     year int not null,
@@ -161,24 +161,24 @@ create table matrix_grade(
 
 
 CREATE TABLE subjects (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    course_id   UUID NOT NULL REFERENCES courses(id),
+    id_subjects          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    course_id   UUID NOT NULL REFERENCES courses(id_courses),
     name        VARCHAR(150) NOT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 create table matrix_subject(
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    id_matrix_grade UUID NOT NULL REFERENCES matrix_grade(id),
-    subject_id UUID NOT NULL REFERENCES subjects(id),
+    id_matrix_subject UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    id_matrix_grade UUID NOT NULL REFERENCES matrix_grade(id_matrix_grade),
+    subject_id UUID NOT NULL REFERENCES subjects(id_subjects),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE rooms (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_rooms               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id        UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     room_number      SMALLINT,
     location         VARCHAR(255),
     student_capacity INT,
@@ -186,14 +186,14 @@ CREATE TABLE rooms (
 );
 
 CREATE TABLE periods (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_periods          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name        VARCHAR(50) NOT NULL                        -- Manhã, Tarde, Noite
 );
 
 CREATE TABLE academic_years (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_academic_years          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     year        varchar(10) NOT NULL,
     start_date  DATE,
     end_date    DATE,
@@ -202,13 +202,13 @@ CREATE TABLE academic_years (
 );
 
 CREATE TABLE classrooms (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    academic_year_id UUID NOT NULL REFERENCES academic_years(id),
-    course_id        UUID NOT NULL REFERENCES courses(id),
-    room_id          UUID REFERENCES rooms(id),
-    level_id         INT  REFERENCES education_levels(id),
-    period_id        UUID REFERENCES periods(id),
+    id_classrooms               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id        UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    academic_year_id UUID NOT NULL REFERENCES academic_years(id_academic_years),
+    course_id        UUID NOT NULL REFERENCES courses(id_courses),
+    room_id          UUID REFERENCES rooms(id_rooms),
+    level_id         INT  REFERENCES education_levels(id_education_levels),
+    period_id        UUID REFERENCES periods(id_periods),
     name             VARCHAR(50) UNIQUE NOT NULL,           -- Ex: "10ª A Manhã"
     created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -218,9 +218,9 @@ CREATE TABLE classrooms (
 -- ============================================================
 
 CREATE TABLE students (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id           UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    user_id             UUID REFERENCES users(id),
+    id_students                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id           UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    user_id             UUID REFERENCES users(id_users),
     first_name          VARCHAR(100) NOT NULL,
     middle_name         VARCHAR(100),
     last_name           VARCHAR(100) NOT NULL,
@@ -239,8 +239,8 @@ CREATE TABLE students (
 
 -- Dados médicos (útil especialmente para creche)
 CREATE TABLE student_medical (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    student_id  UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    id_student_medical          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_id  UUID NOT NULL REFERENCES students(id_students) ON DELETE CASCADE,
     allergies   TEXT,
     medications TEXT,
     blood_type  VARCHAR(10),
@@ -249,8 +249,8 @@ CREATE TABLE student_medical (
 
 -- Encarregados de educação
 CREATE TABLE guardians (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_guardians          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name        VARCHAR(200) NOT NULL,
     phone       VARCHAR(50),
     email       VARCHAR(100),
@@ -258,16 +258,16 @@ CREATE TABLE guardians (
 );
 
 CREATE TABLE student_guardians (
-    student_id  UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
-    guardian_id UUID NOT NULL REFERENCES guardians(id) ON DELETE CASCADE,
+    student_id  UUID NOT NULL REFERENCES students(id_students) ON DELETE CASCADE,
+    guardian_id UUID NOT NULL REFERENCES guardians(id_guardians) ON DELETE CASCADE,
     relation    VARCHAR(50) not null,                                -- Pai, Mãe, Tio...
     PRIMARY KEY (student_id, guardian_id)
 );
 
 -- Autorizados a levantar o aluno (creche)
 CREATE TABLE authorized_pickups (
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    student_id  UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    id_authorized_pickups          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    student_id  UUID NOT NULL REFERENCES students(id_students) ON DELETE CASCADE,
     name        VARCHAR(200) NOT NULL,
     phone       VARCHAR(50),
     relation    VARCHAR(50)
@@ -278,45 +278,45 @@ CREATE TABLE authorized_pickups (
 -- ============================================================
 
 CREATE TABLE enrollments (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_enrollments               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     enrollment_number varchar(50) not null,
-    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    student_id       UUID NOT NULL REFERENCES students(id),
-    classroom_id     UUID NOT NULL REFERENCES classrooms(id),
+    school_id        UUID NOT NULL REFERENCES schools(id_schools_schools) ON DELETE CASCADE,
+    student_id       UUID NOT NULL REFERENCES students(id_students),
+    classroom_id     UUID NOT NULL REFERENCES classrooms(id_classrooms),
     status           VARCHAR(50) DEFAULT 'Activo' CHECK (status IN ('Activo','Transferido','Desistiu','Concluiu','Banido')),
     enrolled_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (student_id, academic_year_id)                  -- um aluno por ano letivo
 );
--- alter table students add  COLUMN id_enrollment UUID REFERENCES enrollments(id);
+-- alter table students add  COLUMN id_enrollment UUID REFERENCES enrollments(id_enrollments);
 -- ============================================================
 -- DOMÍNIO: PROFESSORES / DISCIPLINAS
 -- ============================================================
 
 CREATE TABLE teacher_subjects (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id     UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    employee_id   UUID NOT NULL REFERENCES employees(id),
-    subject_id    UUID NOT NULL REFERENCES subjects(id),
-    classroom_id  UUID NOT NULL REFERENCES classrooms(id),
+    id_teacher_subjects            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id     UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    employee_id   UUID NOT NULL REFERENCES employees(id_employees),
+    subject_id    UUID NOT NULL REFERENCES subjects(id_subjects),
+    classroom_id  UUID NOT NULL REFERENCES classrooms(id_classrooms),
 );
 
 -- ============================================================
 -- DOMÍNIO: NOTAS
 -- ============================================================
 create table evaluation_types (-- tipo de avaliação
-    id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id   UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_evaluation_types          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name        VARCHAR(50) NOT NULL CHECK (name IN ( 'Prova do Professor do 1º Trimestre','Prova Trimestre do 1º Trimestre','Média das Avaliações Continuas do 1º Trimestre','Prova do Professor do 2º Trimestre','Prova Trimestre do 2º Trimestre','Média das Avaliações Continuas do 2º Trimestre','Prova do Professor do 3º Trimestre','Prova Trimestre do 3º Trimestre','Média das Avaliações Continuas do 3º Trimestre', "Prova do Primeiro Semestre","Prova do Segundo Semestre","Avaliação do Primeiro Semestre","Avaliação do Segundo Semestre")),-- thinking about create a new table to 
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE grades (
-    id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id        UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    student_id       UUID NOT NULL REFERENCES students(id),
-    subject_id       UUID NOT NULL REFERENCES subjects(id),
-    teacher_id       UUID NOT NULL REFERENCES employees(id),
-    classroom_id     UUID NOT NULL REFERENCES classrooms(id),
-    id_evaluationtypes int references evaluation_types(id),
+    id_grades               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id        UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    student_id       UUID NOT NULL REFERENCES students(id_students),
+    subject_id       UUID NOT NULL REFERENCES subjects(id_subjects),
+    teacher_id       UUID NOT NULL REFERENCES employees(id_employees),
+    classroom_id     UUID NOT NULL REFERENCES classrooms(id_classrooms),
+    id_evaluationtypes int references evaluation_types(id_evaluation_types),
     score            NUMERIC(5, 2),
     recorded_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -326,21 +326,22 @@ CREATE TABLE grades (
 -- ============================================================
 
 CREATE TABLE student_attendance (
-    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id    UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    student_id   UUID NOT NULL REFERENCES students(id),
-    subject_id   UUID NOT NULL REFERENCES subjects(id),
-    classroom_id UUID NOT NULL REFERENCES classrooms(id),
+    id_student_attendance           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id    UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+
+    student_id   UUID NOT NULL REFERENCES students(id_students),
+    subject_id   UUID NOT NULL REFERENCES subjects(id_subjects),
+    classroom_id UUID NOT NULL REFERENCES classrooms(id_classrooms),
     date         DATE NOT NULL,
     justified    BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE employee_attendance ( -- : faltas dos professores/funcionários
-    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id    UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    employee_id  UUID NOT NULL REFERENCES employees(id),
-    subject_id   UUID REFERENCES subjects(id),
-    classroom_id UUID REFERENCES classrooms(id),
+    id_employee_attendance           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id    UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    employee_id  UUID NOT NULL REFERENCES employees(id_employees),
+    subject_id   UUID REFERENCES subjects(id_subjects),
+    classroom_id UUID REFERENCES classrooms(id_classrooms),
     date         DATE NOT NULL,
     justified    BOOLEAN DEFAULT FALSE
 );
@@ -352,22 +353,10 @@ CREATE TABLE employee_attendance ( -- : faltas dos professores/funcionários
 -- 1. SERVIÇOS (base de tudo)
 -- ════════════════════════════════════════════
 CREATE TABLE services (
-    id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id    UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    name         VARCHAR(150) NOT NULL,        -- ex: 'Propina', 'Matrícula', 'Exame'
-    description  TEXT,
-    is_monthly   BOOLEAN DEFAULT FALSE,        -- TRUE só para propina
-    is_active    BOOLEAN DEFAULT TRUE,
-    created_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ════════════════════════════════════════════
--- 2. PROPINAS (valor por escola/curso/nível)
--- ════════════════════════════════════════════
-CREATE TYPE education_level AS ENUM (
-    'Pré-Escolar', 'Primária', 'Secundária',
-    'Médio', 'Técnico-Profissional',
-    'Licenciatura', 'Mestrado', 'Doutoramento'
+    id_services          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id   UUID NOT NULL REFERENCES schools(id_schools_schools) ON DELETE CASCADE,
+    name        VARCHAR(200) NOT NULL,
+    price       NUMERIC(12, 2) NOT NULL
 );
 
 CREATE TABLE tuition_fees (
@@ -434,20 +423,20 @@ WHERE payment_id IN (
 -- ============================================================
 
 CREATE TABLE book_categories (
-    id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_book_categories       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     name     VARCHAR(100) NOT NULL
 );
 
 CREATE TABLE books (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id     UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+    id_books            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id     UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
     title         VARCHAR(200) NOT NULL,
     publisher     VARCHAR(150),
-    category_id   UUID REFERENCES book_categories(id),
+    category_id   UUID REFERENCES book_categories(id_book_categories),
     file_path     TEXT,
     thumb_path text,
-    uploaded_by   UUID REFERENCES employees(id),
+    uploaded_by   UUID REFERENCES employees(id_employees),
     uploaded_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -456,11 +445,11 @@ CREATE TABLE books (
 -- ============================================================
 
 CREATE TABLE documents (
-    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    school_id     UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
-    student_id    UUID REFERENCES students(id),
+    id_documents            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    school_id     UUID NOT NULL REFERENCES schools(id_schools) ON DELETE CASCADE,
+    student_id    UUID REFERENCES students(id_students),
     document_type VARCHAR(100) NOT NULL,                   
-    issued_by     UUID REFERENCES employees(id),
+    issued_by     UUID REFERENCES employees(id_employees),
     file_path     VARCHAR(255),
     issued_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -470,9 +459,9 @@ CREATE TABLE documents (
 -- ============================================================
 
 CREATE TABLE audit_logs (
-    id             BIGSERIAL PRIMARY KEY,
-    school_id      UUID REFERENCES schools(id),
-    user_id        UUID REFERENCES users(id),
+    id_audit_logs             BIGSERIAL PRIMARY KEY,
+    school_id      UUID REFERENCES schools(id_schools),
+    user_id        UUID REFERENCES users(id_users),
     table_name     VARCHAR(100) NOT NULL,
     action         VARCHAR(20) NOT NULL CHECK (action IN ('Adicionou','Actuliazou','Eliminou')),
     old_data       JSONB,

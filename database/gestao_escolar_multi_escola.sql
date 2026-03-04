@@ -366,8 +366,7 @@ CREATE TABLE services (
 -- ════════════════════════════════════════════
 CREATE TYPE education_level AS ENUM (
     'Pré-Escolar', 'Primária', 'Secundária',
-    'Médio', 'Técnico-Profissional',
-    'Licenciatura', 'Mestrado', 'Doutoramento'
+    'Médio','Licenciatura'
 );
 
 CREATE TABLE tuition_fees (

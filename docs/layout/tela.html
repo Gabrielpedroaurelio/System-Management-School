@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<title>ERP Escolar — Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;}
+.lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;}
+.mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;}
+.ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.sub{padding-left:44px;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;font-size:13px;}
+.ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;}
+.tr{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;margin-bottom:18px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.sc{background:#fff;border-radius:13px;padding:16px;display:flex;align-items:center;gap:13px;border:1px solid #f0f0f0;}
+.si{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.si.v{background:#f5f3ff;color:#7c3aed;}.si.b{background:#eff6ff;color:#3b82f6;}
+.si.o{background:#fff7ed;color:#f97316;}.si.g{background:#f0fdf4;color:#22c55e;}
+.si i{font-size:19px;}
+.sl{font-size:11px;color:#9ca3af;margin-bottom:2px;}
+.sv{font-size:21px;font-weight:700;color:#1f2937;}
+.sd{font-size:11px;margin-top:1px;}
+.sd.up{color:#22c55e;}.sd.dn{color:#ef4444;}
+.g2{display:grid;grid-template-columns:1fr 300px;gap:14px;margin-bottom:18px;}
+.g2b{display:grid;grid-template-columns:1fr 300px;gap:14px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:700;color:#1e1b4b;}
+.cs{font-size:11px;color:#9ca3af;margin-top:1px;}
+.leg{display:flex;gap:10px;font-size:11.5px;color:#6b7280;}
+.ld{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:3px;}
+.cw{height:185px;}
+.da{display:flex;flex-direction:column;align-items:center;}
+.dw{position:relative;width:140px;height:140px;margin:0 auto 10px;}
+.dc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;}
+.dc .n{font-size:19px;font-weight:700;color:#1e1b4b;}
+.dc .l{font-size:10px;color:#9ca3af;}
+.dl{display:flex;gap:16px;}
+.dl span{font-size:11.5px;color:#6b7280;display:flex;align-items:center;gap:4px;}
+.dl .dot{width:8px;height:8px;border-radius:50%;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{text-align:left;padding:7px 9px;color:#9ca3af;font-weight:600;font-size:11px;border-bottom:1px solid #f0f0f0;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:8px 9px;color:#374151;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+.ar{display:flex;align-items:center;gap:8px;}
+.av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;}
+.tv{background:#f5f3ff;color:#7c3aed;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:600;}
+.tg{background:#f0fdf4;color:#22c55e;border-radius:5px;padding:1px 6px;font-size:11px;font-weight:600;}
+.nl{display:flex;flex-direction:column;gap:11px;}
+.ni-wrap{display:flex;align-items:flex-start;gap:9px;}
+.ni{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ni.p{background:#f5f3ff;color:#7c3aed;}.ni.o{background:#fff7ed;color:#f97316;}
+.ni.g{background:#f0fdf4;color:#22c55e;}.ni.b{background:#eff6ff;color:#3b82f6;}
+.ni i{font-size:13px;}
+.nt{font-size:12.5px;font-weight:600;color:#1f2937;}
+.nd{font-size:11px;color:#9ca3af;margin-top:1px;}
+.ntm{margin-left:auto;font-size:10.5px;color:#9ca3af;white-space:nowrap;}
+input[type=checkbox]{accent-color:#7c3aed;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi act"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-down ml-a"></i></div>
+    <div class="mi sub"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Todos os Alunos</div>
+    <div class="mi sub"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Detalhes</div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr">Super Admin</div></div><i class="fa-solid fa-chevron-down" style="font-size:10px;color:#9ca3af;margin-left:4px;"></i></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="pt">Dashboard Admin</div>
+    <div class="stats">
+      <div class="sc"><div class="si v"><i class="fa-solid fa-user-graduate"></i></div><div><div class="sl">Total Alunos</div><div class="sv">3.480</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +12%</div></div></div>
+      <div class="sc"><div class="si b"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="sl">Professores</div><div class="sv">142</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +3</div></div></div>
+      <div class="sc"><div class="si o"><i class="fa-solid fa-people-roof"></i></div><div><div class="sl">Encarregados</div><div class="sv">2.910</div><div class="sd dn"><i class="fa-solid fa-arrow-trend-down"></i> -2%</div></div></div>
+      <div class="sc"><div class="si g"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="sl">Receita Mensal</div><div class="sv">850K Kz</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +8%</div></div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Resultados por Avaliação</div><div class="cs">Professores & Alunos — 2025</div></div><div class="leg"><span><span class="ld" style="background:#7c3aed"></span>Professor</span><span><span class="ld" style="background:#f97316"></span>Aluno</span></div></div>
+        <div class="cw"><canvas id="bc"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Alunos por Género</div></div>
+        <div class="da">
+          <div class="dw"><canvas id="dc"></canvas><div class="dc"><div class="n">3.480</div><div class="l">Total</div></div></div>
+          <div class="dl"><span><span class="dot" style="background:#7c3aed"></span>Masculino</span><span><span class="dot" style="background:#f97316"></span>Feminino</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="g2b">
+      <div class="card">
+        <div class="ch"><div class="ct">Melhores Alunos</div><i class="fa-solid fa-ellipsis" style="color:#9ca3af;"></i></div>
+        <table>
+          <thead><tr><th><input type="checkbox"/></th><th>Nome</th><th>Nº Matrícula</th><th>Nota</th><th>%</th><th>Ano</th></tr></thead>
+          <tbody>
+            <tr><td><input type="checkbox"/></td><td><div class="ar"><div class="av">EH</div>Evelyn Harper</div></td><td>#MAT43178</td><td><span class="tv">18,5</span></td><td><span class="tg">98%</span></td><td>2025</td></tr>
+            <tr><td><input type="checkbox" checked/></td><td><div class="ar"><div class="av" style="background:linear-gradient(135deg,#f97316,#fb923c)">DP</div>Diana Pinto</div></td><td>#MAT43174</td><td><span class="tv">17,2</span></td><td><span class="tg">91%</span></td><td>2025</td></tr>
+            <tr><td><input type="checkbox"/></td><td><div class="ar"><div class="av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JM</div>João Millar</div></td><td>#MAT43187</td><td><span class="tv">17,5</span></td><td><span class="tg">92%</span></td><td>2025</td></tr>
+            <tr><td><input type="checkbox"/></td><td><div class="ar"><div class="av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">AS</div>Ana Silva</div></td><td>#MAT43192</td><td><span class="tv">16,8</span></td><td><span class="tg">89%</span></td><td>2025</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Actividade Recente</div><i class="fa-solid fa-ellipsis" style="color:#9ca3af;"></i></div>
+        <div class="nl">
+          <div class="ni-wrap"><div class="ni p"><i class="fa-solid fa-user-plus"></i></div><div><div class="nt">Novo Professor</div><div class="nd">Prof. Carlos Mateus adicionado</div></div><span class="ntm">Agora</span></div>
+          <div class="ni-wrap"><div class="ni o"><i class="fa-solid fa-file-invoice-dollar"></i></div><div><div class="nt">Propinas Pendentes</div><div class="nd">23 alunos em atraso</div></div><span class="ntm">Hoje</span></div>
+          <div class="ni-wrap"><div class="ni g"><i class="fa-solid fa-book"></i></div><div><div class="nt">Novo Curso</div><div class="nd">Gestão Hoteleira adicionado</div></div><span class="ntm">24 Nov</span></div>
+          <div class="ni-wrap"><div class="ni b"><i class="fa-solid fa-clipboard-list"></i></div><div><div class="nt">Matrículas Abertas</div><div class="nd">Ano lectivo 2026 iniciado</div></div><span class="ntm">22 Nov</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('bc'),{type:'bar',data:{labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],datasets:[{data:[80,90,75,95,110,100,85,92,105,98,88,102],backgroundColor:'#7c3aed',borderRadius:4,barPercentage:.45},{data:[60,70,65,80,90,85,70,78,88,82,74,90],backgroundColor:'#fb923c',borderRadius:4,barPercentage:.45}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f5f5f5'},ticks:{font:{size:10}}}}}});
+new Chart(document.getElementById('dc'),{type:'doughnut',data:{datasets:[{data:[1980,1500],backgroundColor:['#7c3aed','#f97316'],borderWidth:0}]},options:{cutout:'70%',plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}});
+</script>
+</body>
+</html>

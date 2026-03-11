@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Perfil do Aluno</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;}
+.lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;}
+.mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;}
+.ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.sub{padding-left:44px;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;}
+.ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;}
+.tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;}
+.breadcrumb a{color:#7c3aed;text-decoration:none;}
+.hd-btns{display:flex;gap:10px;}
+.btn-outline{background:#fff;color:#7c3aed;border:1.5px solid #7c3aed;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:16px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;}
+.profile-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:10px;}
+.prof-av{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;margin-bottom:12px;}
+.prof-name{font-size:17px;font-weight:700;color:#1e1b4b;margin-bottom:2px;}
+.prof-mat{font-size:12px;color:#9ca3af;}
+.prof-status{background:#f0fdf4;color:#22c55e;border-radius:20px;padding:3px 12px;font-size:12px;font-weight:600;margin:10px 0 16px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;text-align:left;border-top:1px solid #f0f0f0;padding-top:16px;}
+.info-item .lbl{font-size:10.5px;color:#9ca3af;margin-bottom:2px;}
+.info-item .val{font-size:13px;font-weight:600;color:#374151;}
+.info-item.full{grid-column:span 2;}
+.guardian-card{margin-top:14px;border-top:1px solid #f0f0f0;padding-top:14px;}
+.gc-title{font-size:12px;font-weight:700;color:#1e1b4b;margin-bottom:10px;text-align:left;}
+.gc-item{display:flex;align-items:center;gap:10px;text-align:left;}
+.gc-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f97316,#fb923c);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.gc-name{font-size:13px;font-weight:600;color:#1f2937;}
+.gc-rel{font-size:11px;color:#9ca3af;}
+.right-col{display:flex;flex-direction:column;gap:14px;}
+.tabs{display:flex;gap:0;border-bottom:2px solid #f0f0f0;margin-bottom:16px;}
+.tab{padding:9px 18px;font-size:13.5px;color:#9ca3af;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500;}
+.tab.active{color:#7c3aed;border-bottom-color:#7c3aed;font-weight:600;}
+.ch-title{font-size:14px;font-weight:700;color:#1e1b4b;margin-bottom:14px;}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.ms{background:#f9f9ff;border-radius:10px;padding:14px;text-align:center;}
+.ms-val{font-size:20px;font-weight:700;color:#7c3aed;}
+.ms-lbl{font-size:11px;color:#9ca3af;margin-top:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{text-align:left;padding:8px 10px;color:#9ca3af;font-weight:600;font-size:11px;border-bottom:1px solid #f0f0f0;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:9px 10px;color:#374151;border-bottom:1px solid #f9f9f9;}
+.nota{font-weight:700;color:#7c3aed;}
+.nota.low{color:#ef4444;}
+.cw{height:160px;margin-top:10px;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi act"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-down ml-a"></i></div>
+    <div class="mi sub"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Todos os Alunos</div>
+    <div class="mi sub act"><i class="fa-regular fa-circle ico" style="font-size:7px;"></i> Detalhes</div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Perfil do Aluno</div><div class="breadcrumb"><a href="#">Início</a> / <a href="#">Alunos</a> / Evelyn Harper</div></div>
+      <div class="hd-btns">
+        <button class="btn-outline"><i class="fa-solid fa-file-export"></i> Exportar</button>
+        <button class="btn-primary"><i class="fa-solid fa-pen"></i> Editar</button>
+      </div>
+    </div>
+    <div class="layout">
+      <!-- LEFT -->
+      <div>
+        <div class="card">
+          <div class="profile-card">
+            <div class="prof-av">EH</div>
+            <div class="prof-name">Evelyn Harper</div>
+            <div class="prof-mat">#MAT43178 · 10ª A Manhã</div>
+            <div class="prof-status">Activo</div>
+            <div class="info-grid">
+              <div class="info-item"><div class="lbl">Data de Nasc.</div><div class="val">02/05/2005</div></div>
+              <div class="info-item"><div class="lbl">Género</div><div class="val">Feminino</div></div>
+              <div class="info-item"><div class="lbl">Telefone</div><div class="val">+244 923 456 789</div></div>
+              <div class="info-item"><div class="lbl">Email</div><div class="val" style="font-size:11.5px;">evelyn@email.com</div></div>
+              <div class="info-item full"><div class="lbl">Morada</div><div class="val">Luanda, Ingombota, Rua 10</div></div>
+              <div class="info-item"><div class="lbl">Turma</div><div class="val">10ª A Manhã</div></div>
+              <div class="info-item"><div class="lbl">Ano Lectivo</div><div class="val">2025</div></div>
+              <div class="info-item"><div class="lbl">BI / Doc.</div><div class="val">003456789LA0</div></div>
+              <div class="info-item"><div class="lbl">Curso</div><div class="val">Ciências</div></div>
+            </div>
+          </div>
+          <div class="guardian-card">
+            <div class="gc-title"><i class="fa-solid fa-people-roof" style="color:#7c3aed;margin-right:5px;"></i>Encarregado de Educação</div>
+            <div class="gc-item">
+              <div class="gc-av">MH</div>
+              <div><div class="gc-name">Manuel Harper</div><div class="gc-rel">Pai · +244 912 000 111</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT -->
+      <div class="right-col">
+        <div class="card">
+          <div class="mini-stats">
+            <div class="ms"><div class="ms-val">17,2</div><div class="ms-lbl">Média Geral</div></div>
+            <div class="ms"><div class="ms-val" style="color:#22c55e;">4</div><div class="ms-lbl">Faltas Justif.</div></div>
+            <div class="ms"><div class="ms-val" style="color:#ef4444;">2</div><div class="ms-lbl">Faltas Injust.</div></div>
+          </div>
+          <div class="tabs">
+            <div class="tab active">Notas</div>
+            <div class="tab">Frequência</div>
+            <div class="tab">Pagamentos</div>
+            <div class="tab">Documentos</div>
+          </div>
+          <div class="ch-title">Notas por Disciplina — 2025</div>
+          <table>
+            <thead><tr><th>Disciplina</th><th>PP 1ºT</th><th>PT 1ºT</th><th>MAC 1ºT</th><th>PP 2ºT</th><th>PT 2ºT</th><th>MAC 2ºT</th><th>Média</th></tr></thead>
+            <tbody>
+              <tr><td><b>Matemática</b></td><td>16</td><td>15</td><td>16</td><td>17</td><td>15</td><td>17</td><td class="nota">16,3</td></tr>
+              <tr><td><b>Português</b></td><td>18</td><td>17</td><td>18</td><td>19</td><td>18</td><td>18</td><td class="nota">18,0</td></tr>
+              <tr><td><b>Física</b></td><td>14</td><td>13</td><td>14</td><td>15</td><td>14</td><td>15</td><td class="nota low">14,2</td></tr>
+              <tr><td><b>Química</b></td><td>17</td><td>16</td><td>17</td><td>18</td><td>16</td><td>17</td><td class="nota">16,8</td></tr>
+              <tr><td><b>Biologia</b></td><td>19</td><td>18</td><td>19</td><td>19</td><td>18</td><td>19</td><td class="nota">18,7</td></tr>
+              <tr><td><b>História</b></td><td>16</td><td>15</td><td>16</td><td>17</td><td>16</td><td>17</td><td class="nota">16,2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="ch-title">Evolução das Notas</div>
+          <div class="cw"><canvas id="lineC"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('lineC'),{type:'line',data:{labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out'],datasets:[{label:'Média',data:[15,15.5,16,16.2,17,16.8,17.2,17,17.5,17.2],borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.08)',fill:true,tension:.4,pointBackgroundColor:'#7c3aed',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{min:10,max:20,grid:{color:'#f5f5f5'},ticks:{font:{size:10}}}}}});
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Pagamentos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;} .lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;} .mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;} .ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;} .ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;} .tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;} .breadcrumb a{color:#7c3aed;text-decoration:none;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.sc{background:#fff;border-radius:13px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid #f0f0f0;}
+.si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.si.g{background:#f0fdf4;color:#22c55e;} .si.r{background:#fff1f2;color:#ef4444;}
+.si.v{background:#f5f3ff;color:#7c3aed;} .si.o{background:#fff7ed;color:#f97316;}
+.si i{font-size:18px;}
+.sl{font-size:11px;color:#9ca3af;margin-bottom:2px;} .sv{font-size:19px;font-weight:700;color:#1f2937;}
+.sd{font-size:11px;margin-top:1px;} .sd.up{color:#22c55e;} .sd.dn{color:#ef4444;}
+.g2{display:grid;grid-template-columns:1fr 280px;gap:14px;margin-bottom:18px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:700;color:#1e1b4b;} .cs{font-size:11px;color:#9ca3af;margin-top:1px;}
+.cw{height:170px;}
+.method-list{display:flex;flex-direction:column;gap:10px;}
+.method-item{display:flex;align-items:center;gap:10px;}
+.method-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.m-cash{background:#f0fdf4;color:#22c55e;} .m-trf{background:#eff6ff;color:#3b82f6;} .m-mx{background:#f5f3ff;color:#7c3aed;}
+.method-label{font-size:13px;font-weight:600;color:#1f2937;flex:1;}
+.method-pct{font-size:12px;color:#9ca3af;margin-right:8px;}
+.method-bar{flex:1;height:5px;background:#f0f0f0;border-radius:5px;overflow:hidden;max-width:80px;}
+.mb-fill{height:100%;border-radius:5px;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{text-align:left;padding:8px 10px;color:#9ca3af;font-weight:600;font-size:11px;border-bottom:1px solid #f0f0f0;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:9px 10px;color:#374151;border-bottom:1px solid #f9f9f9;vertical-align:middle;}
+.av-row{display:flex;align-items:center;gap:8px;}
+.av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0;}
+.pay-status{border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;}
+.ps-paid{background:#f0fdf4;color:#22c55e;} .ps-pend{background:#fff7ed;color:#f97316;} .ps-late{background:#fff1f2;color:#ef4444;}
+.action-btns{display:flex;gap:6px;}
+.action-btns button{width:26px;height:26px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.filters{display:flex;gap:10px;margin-bottom:16px;}
+.filter-select{background:#f4f6fb;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#6b7280;outline:none;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi act"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Pagamentos & Propinas</div><div class="breadcrumb"><a href="#">Início</a> / Pagamentos</div></div>
+      <button class="btn-primary"><i class="fa-solid fa-plus"></i> Registar Pagamento</button>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="si g"><i class="fa-solid fa-circle-check"></i></div><div><div class="sl">Receita Mensal</div><div class="sv">850K Kz</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +8%</div></div></div>
+      <div class="sc"><div class="si r"><i class="fa-solid fa-hourglass-half"></i></div><div><div class="sl">Em Atraso</div><div class="sv">23 alunos</div><div class="sd dn"><i class="fa-solid fa-triangle-exclamation"></i> Urgente</div></div></div>
+      <div class="sc"><div class="si v"><i class="fa-solid fa-receipt"></i></div><div><div class="sl">Pagamentos Hoje</div><div class="sv">47</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +5</div></div></div>
+      <div class="sc"><div class="si o"><i class="fa-solid fa-percent"></i></div><div><div class="sl">Taxa de Cobrança</div><div class="sv">87%</div><div class="sd up"><i class="fa-solid fa-arrow-trend-up"></i> +2%</div></div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Receita Mensal 2025</div><div class="cs">Propinas cobradas por mês</div></div></div>
+        <div class="cw"><canvas id="lineC"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Métodos de Pagamento</div></div>
+        <div class="method-list">
+          <div class="method-item"><div class="method-icon m-cash"><i class="fa-solid fa-money-bill-wave"></i></div><span class="method-label">Dinheiro</span><span class="method-pct">42%</span><div class="method-bar"><div class="mb-fill" style="width:42%;background:#22c55e;"></div></div></div>
+          <div class="method-item"><div class="method-icon m-mx"><i class="fa-solid fa-credit-card"></i></div><span class="method-label">Multicaixa</span><span class="method-pct">35%</span><div class="method-bar"><div class="mb-fill" style="width:35%;background:#7c3aed;"></div></div></div>
+          <div class="method-item"><div class="method-icon m-trf"><i class="fa-solid fa-arrow-right-arrow-left"></i></div><span class="method-label">Transferência</span><span class="method-pct">23%</span><div class="method-bar"><div class="mb-fill" style="width:23%;background:#3b82f6;"></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Histórico de Pagamentos</div></div>
+      <div class="filters">
+        <div class="sb" style="max-width:240px;"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="Pesquisar aluno…"/></div>
+        <select class="filter-select"><option>Todos os Status</option><option>Pago</option><option>Pendente</option><option>Em Atraso</option></select>
+        <select class="filter-select"><option>Todos os Serviços</option><option>Propina</option><option>Inscrição</option><option>Material</option></select>
+        <select class="filter-select"><option>Março 2025</option><option>Fevereiro 2025</option><option>Janeiro 2025</option></select>
+      </div>
+      <table>
+        <thead><tr><th>Aluno</th><th>Serviço</th><th>Valor</th><th>Método</th><th>Data</th><th>Referência</th><th>Status</th><th>Acção</th></tr></thead>
+        <tbody>
+          <tr><td><div class="av-row"><div class="av">EH</div>Evelyn Harper</div></td><td>Propina — Março</td><td><b>15.000 Kz</b></td><td><i class="fa-solid fa-credit-card" style="color:#7c3aed;margin-right:4px;"></i>Multicaixa</td><td>01/03/2025</td><td>REF2025031001</td><td><span class="pay-status ps-paid">Pago</span></td><td><div class="action-btns"><button><i class="fa-solid fa-receipt"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+          <tr><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f97316,#fb923c)">DP</div>Diana Pinto</div></td><td>Propina — Março</td><td><b>15.000 Kz</b></td><td><i class="fa-solid fa-money-bill-wave" style="color:#22c55e;margin-right:4px;"></i>Dinheiro</td><td>02/03/2025</td><td>REF2025031002</td><td><span class="pay-status ps-paid">Pago</span></td><td><div class="action-btns"><button><i class="fa-solid fa-receipt"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+          <tr><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JM</div>João Millar</div></td><td>Propina — Março</td><td><b>15.000 Kz</b></td><td>—</td><td>—</td><td>—</td><td><span class="pay-status ps-pend">Pendente</span></td><td><div class="action-btns"><button><i class="fa-solid fa-plus"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+          <tr><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">AS</div>Ana Silva</div></td><td>Propina — Fev + Mar</td><td><b>30.000 Kz</b></td><td>—</td><td>—</td><td>—</td><td><span class="pay-status ps-late">Em Atraso</span></td><td><div class="action-btns"><button><i class="fa-solid fa-plus"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+          <tr><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">MN</div>Miguel Neto</div></td><td>Inscrição 2025</td><td><b>25.000 Kz</b></td><td><i class="fa-solid fa-arrow-right-arrow-left" style="color:#3b82f6;margin-right:4px;"></i>Transferência</td><td>28/02/2025</td><td>REF2025022801</td><td><span class="pay-status ps-paid">Pago</span></td><td><div class="action-btns"><button><i class="fa-solid fa-receipt"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+          <tr><td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f59e0b,#fcd34d)">LC</div>Lara Costa</div></td><td>Propina — Março</td><td><b>15.000 Kz</b></td><td><i class="fa-solid fa-credit-card" style="color:#7c3aed;margin-right:4px;"></i>Multicaixa</td><td>03/03/2025</td><td>REF2025031003</td><td><span class="pay-status ps-paid">Pago</span></td><td><div class="action-btns"><button><i class="fa-solid fa-receipt"></i></button><button><i class="fa-regular fa-eye"></i></button></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('lineC'),{type:'line',data:{labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],datasets:[{label:'Receita',data:[720,680,850,790,860,910,870,920,880,940,900,960],borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,.07)',fill:true,tension:.4,pointBackgroundColor:'#7c3aed',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f5f5f5'},ticks:{font:{size:10},callback:v=>v+'K'}}}}});
+</script>
+</body>
+</html>

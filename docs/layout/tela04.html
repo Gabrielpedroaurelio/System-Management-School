@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Turmas</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;} .lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;} .mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;} .ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;} .ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;} .tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;} .breadcrumb a{color:#7c3aed;text-decoration:none;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 18px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;}
+.filters{display:flex;gap:10px;margin-bottom:18px;}
+.filter-btn{background:#fff;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 16px;font-size:13px;color:#6b7280;cursor:pointer;font-weight:500;}
+.filter-btn.active{background:#f5f3ff;border-color:#7c3aed;color:#7c3aed;font-weight:600;}
+.filter-select{background:#fff;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#6b7280;outline:none;}
+.grid-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.class-card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;cursor:pointer;transition:.15s;}
+.class-card:hover{box-shadow:0 4px 20px rgba(124,58,237,.1);border-color:#e0d6fc;}
+.cc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cc-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;}
+.cc-menu{color:#9ca3af;cursor:pointer;}
+.cc-name{font-size:16px;font-weight:700;color:#1e1b4b;margin-bottom:3px;}
+.cc-course{font-size:12px;color:#9ca3af;margin-bottom:14px;}
+.cc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.cc-stat{text-align:center;}
+.cc-stat .v{font-size:17px;font-weight:700;color:#1e1b4b;}
+.cc-stat .l{font-size:10px;color:#9ca3af;}
+.cc-prof{display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid #f0f0f0;}
+.cc-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;}
+.cc-pname{font-size:12px;color:#6b7280;} .cc-period{font-size:11px;color:#9ca3af;margin-left:auto;}
+.prog-bar{height:5px;background:#f0f0f0;border-radius:5px;overflow:hidden;margin-top:10px;}
+.prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi act"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Turmas</div><div class="breadcrumb"><a href="#">Início</a> / Turmas</div></div>
+      <button class="btn-primary"><i class="fa-solid fa-plus"></i> Nova Turma</button>
+    </div>
+    <div class="filters">
+      <div class="filter-btn active">Todas</div>
+      <div class="filter-btn">Manhã</div>
+      <div class="filter-btn">Tarde</div>
+      <div class="filter-btn">Noite</div>
+      <select class="filter-select"><option>Todos os Cursos</option><option>Ciências</option><option>Humanidades</option><option>Economia</option></select>
+      <select class="filter-select"><option>Todos os Níveis</option><option>10ª Classe</option><option>11ª Classe</option><option>12ª Classe</option></select>
+    </div>
+    <div class="grid-cards">
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">10A</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">10ª Classe A</div>
+        <div class="cc-course">Ciências · Sala 12</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">38</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">6</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">16,8</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:84%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>38 / 45 vagas</span><span>84%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#7c3aed,#a78bfa)">CM</div>
+          <span class="cc-pname">Dir. Carlos Mateus</span>
+          <span class="cc-period"><i class="fa-regular fa-sun"></i> Manhã</span>
+        </div>
+      </div>
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#f97316,#fb923c)">10B</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">10ª Classe B</div>
+        <div class="cc-course">Humanidades · Sala 8</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">42</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">6</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">15,2</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:93%;background:linear-gradient(90deg,#f97316,#fb923c)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>42 / 45 vagas</span><span>93%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#f97316,#fb923c)">AS</div>
+          <span class="cc-pname">Dir. Ana Santos</span>
+          <span class="cc-period"><i class="fa-regular fa-moon"></i> Tarde</span>
+        </div>
+      </div>
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">11A</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">11ª Classe A</div>
+        <div class="cc-course">Ciências · Sala 15</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">35</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">7</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">17,1</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:78%;background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>35 / 45 vagas</span><span>78%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JP</div>
+          <span class="cc-pname">Dir. João Pires</span>
+          <span class="cc-period"><i class="fa-regular fa-sun"></i> Manhã</span>
+        </div>
+      </div>
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#22c55e,#4ade80)">11B</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">11ª Classe B</div>
+        <div class="cc-course">Economia · Sala 5</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">40</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">6</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">15,9</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:89%;background:linear-gradient(90deg,#22c55e,#4ade80)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>40 / 45 vagas</span><span>89%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">MF</div>
+          <span class="cc-pname">Dir. Maria Faria</span>
+          <span class="cc-period"><i class="fa-solid fa-star-and-crescent" style="font-size:10px;"></i> Noite</span>
+        </div>
+      </div>
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">12A</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">12ª Classe A</div>
+        <div class="cc-course">Ciências · Sala 20</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">33</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">8</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">16,4</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:73%;background:linear-gradient(90deg,#ec4899,#f9a8d4)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>33 / 45 vagas</span><span>73%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#ec4899,#f9a8d4)">RL</div>
+          <span class="cc-pname">Dir. Rosa Lima</span>
+          <span class="cc-period"><i class="fa-regular fa-sun"></i> Manhã</span>
+        </div>
+      </div>
+      <div class="class-card">
+        <div class="cc-header"><div class="cc-icon" style="background:linear-gradient(135deg,#f59e0b,#fcd34d)">12B</div><i class="fa-solid fa-ellipsis cc-menu"></i></div>
+        <div class="cc-name">12ª Classe B</div>
+        <div class="cc-course">Humanidades · Sala 3</div>
+        <div class="cc-stats">
+          <div class="cc-stat"><div class="v">36</div><div class="l">Alunos</div></div>
+          <div class="cc-stat"><div class="v">7</div><div class="l">Disciplinas</div></div>
+          <div class="cc-stat"><div class="v">15,7</div><div class="l">Média</div></div>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:80%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-top:4px;"><span>36 / 45 vagas</span><span>80%</span></div>
+        <div class="cc-prof" style="margin-top:10px;">
+          <div class="cc-av" style="background:linear-gradient(135deg,#f59e0b,#fcd34d)">BN</div>
+          <span class="cc-pname">Dir. Bruno Neto</span>
+          <span class="cc-period"><i class="fa-regular fa-moon"></i> Tarde</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

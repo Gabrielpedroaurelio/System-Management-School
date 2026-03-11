@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/><title>ERP — Frequência / Faltas</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:#f4f6fb;display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:228px;background:#fff;height:100vh;display:flex;flex-direction:column;border-right:1px solid #eee;flex-shrink:0;}
+.s-logo{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f0f0f0;}
+.li{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.li i{color:#fff;font-size:15px;} .lt{font-weight:700;font-size:16px;color:#1e1b4b;}
+.s-nav{flex:1;overflow-y:auto;padding:8px 0;}
+.ml{padding:10px 16px 3px;font-size:10px;font-weight:600;color:#b0b7c3;text-transform:uppercase;letter-spacing:.8px;}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 18px;color:#6b7280;font-size:13.5px;cursor:pointer;border-left:3px solid transparent;}
+.mi:hover,.mi.act{background:#f5f3ff;color:#7c3aed;} .mi.act{border-left-color:#7c3aed;font-weight:600;}
+.mi i.ico{width:17px;text-align:center;font-size:14px;} .ml-a{margin-left:auto;font-size:10px;}
+.badge{background:#ef4444;color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;margin-left:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:#fff;padding:0 24px;height:58px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #eee;}
+.sb{flex:1;max-width:320px;background:#f4f6fb;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:8px;padding:7px 13px;}
+.sb input{border:none;background:transparent;outline:none;font-size:13.5px;color:#374151;width:100%;}
+.sb i{color:#9ca3af;} .ta{display:flex;align-items:center;gap:11px;margin-left:auto;}
+.tb{width:35px;height:35px;border-radius:50%;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#6b7280;position:relative;}
+.tb .rd{position:absolute;top:7px;right:7px;width:6px;height:6px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.tu{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;}
+.tn{font-size:13px;font-weight:600;color:#1f2937;} .tr2{font-size:10px;color:#9ca3af;}
+.con{flex:1;overflow-y:auto;padding:20px 24px;}
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.pt{font-size:19px;font-weight:700;color:#1e1b4b;}
+.breadcrumb{font-size:12px;color:#9ca3af;margin-top:3px;} .breadcrumb a{color:#7c3aed;text-decoration:none;}
+.hd-btns{display:flex;gap:10px;}
+.btn-outline{background:#fff;color:#7c3aed;border:1.5px solid #7c3aed;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-primary{background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.sc{background:#fff;border-radius:13px;padding:16px;display:flex;align-items:center;gap:12px;border:1px solid #f0f0f0;}
+.si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.si.g{background:#f0fdf4;color:#22c55e;} .si.r{background:#fff1f2;color:#ef4444;}
+.si.v{background:#f5f3ff;color:#7c3aed;} .si.o{background:#fff7ed;color:#f97316;}
+.si i{font-size:18px;} .sl{font-size:11px;color:#9ca3af;margin-bottom:2px;}
+.sv{font-size:19px;font-weight:700;color:#1f2937;}
+.g2{display:grid;grid-template-columns:1fr 280px;gap:14px;margin-bottom:18px;}
+.card{background:#fff;border-radius:13px;border:1px solid #f0f0f0;padding:18px;}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.ct{font-size:14px;font-weight:700;color:#1e1b4b;} .cs{font-size:11px;color:#9ca3af;margin-top:1px;}
+.cw{height:170px;}
+.top-absent{display:flex;flex-direction:column;gap:10px;}
+.ta-item{display:flex;align-items:center;gap:10px;}
+.ta-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;}
+.ta-name{font-size:13px;font-weight:600;color:#1f2937;flex:1;}
+.ta-class{font-size:11px;color:#9ca3af;}
+.ta-count{background:#fff1f2;color:#ef4444;border-radius:20px;padding:2px 9px;font-size:12px;font-weight:700;}
+.controls-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.ctrl-select{background:#f4f6fb;border:1.5px solid #e5e7eb;border-radius:9px;padding:7px 12px;font-size:13px;color:#374151;outline:none;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead th{text-align:center;padding:8px;color:#9ca3af;font-weight:600;font-size:11px;border-bottom:1px solid #f0f0f0;}
+thead th:first-child{text-align:left;}
+tbody tr:hover{background:#fafafa;}
+tbody td{padding:8px;color:#374151;border-bottom:1px solid #f9f9f9;text-align:center;vertical-align:middle;}
+tbody td:first-child{text-align:left;}
+.av-row{display:flex;align-items:center;gap:8px;}
+.av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#a78bfa);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;flex-shrink:0;}
+.att-btn{width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;font-size:14px;display:inline-flex;align-items:center;justify-content:center;}
+.att-present{background:#f0fdf4;color:#22c55e;}
+.att-absent{background:#fff1f2;color:#ef4444;}
+.att-late{background:#fff7ed;color:#f97316;}
+.att-empty{background:#f4f6fb;color:#d1d5db;border:1.5px dashed #e5e7eb;}
+.total-p{color:#22c55e;font-weight:700;} .total-a{color:#ef4444;font-weight:700;} .total-l{color:#f97316;font-weight:700;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:4px;}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="s-logo"><div class="li"><i class="fa-solid fa-graduation-cap"></i></div><span class="lt">EduERP</span></div>
+  <nav class="s-nav">
+    <div class="ml">Principal</div>
+    <div class="mi"><i class="fa-solid fa-house ico"></i> Dashboard</div>
+    <div class="mi"><i class="fa-solid fa-users ico"></i> Alunos <i class="fa-solid fa-chevron-right ml-a"></i></div>
+    <div class="mi"><i class="fa-solid fa-chalkboard-user ico"></i> Professores</div>
+    <div class="mi"><i class="fa-solid fa-book-open ico"></i> Biblioteca</div>
+    <div class="ml">Académico</div>
+    <div class="mi"><i class="fa-solid fa-layer-group ico"></i> Turmas</div>
+    <div class="mi"><i class="fa-solid fa-atom ico"></i> Disciplinas</div>
+    <div class="mi"><i class="fa-solid fa-calendar-days ico"></i> Horários</div>
+    <div class="mi act"><i class="fa-solid fa-clipboard-check ico"></i> Frequência</div>
+    <div class="mi"><i class="fa-solid fa-file-pen ico"></i> Avaliações <span class="badge">3</span></div>
+    <div class="ml">Gestão</div>
+    <div class="mi"><i class="fa-solid fa-coins ico"></i> Pagamentos</div>
+    <div class="mi"><i class="fa-solid fa-bell ico"></i> Avisos</div>
+    <div class="mi"><i class="fa-solid fa-gear ico"></i> Definições</div>
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="sb"><i class="fa-solid fa-magnifying-glass"></i><input placeholder="O que procura?"/></div>
+    <div class="ta">
+      <div class="tb"><i class="fa-regular fa-bell"></i><span class="rd"></span></div>
+      <div class="tb"><i class="fa-regular fa-comment-dots"></i></div>
+      <div class="tu"><div class="tav">PL</div><div><div class="tn">Priscila Lima</div><div class="tr2">Super Admin</div></div></div>
+    </div>
+  </header>
+  <div class="con">
+    <div class="page-hd">
+      <div><div class="pt">Frequência & Faltas</div><div class="breadcrumb"><a href="#">Início</a> / Frequência</div></div>
+      <div class="hd-btns">
+        <button class="btn-outline"><i class="fa-solid fa-file-export"></i> Exportar</button>
+        <button class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Presenças</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="sc"><div class="si g"><i class="fa-solid fa-circle-check"></i></div><div><div class="sl">Presenças Hoje</div><div class="sv">312</div></div></div>
+      <div class="sc"><div class="si r"><i class="fa-solid fa-circle-xmark"></i></div><div><div class="sl">Faltas Hoje</div><div class="sv">26</div></div></div>
+      <div class="sc"><div class="si o"><i class="fa-solid fa-clock"></i></div><div><div class="sl">Atrasos</div><div class="sv">8</div></div></div>
+      <div class="sc"><div class="si v"><i class="fa-solid fa-percent"></i></div><div><div class="sl">Taxa de Presença</div><div class="sv">92%</div></div></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Frequência Semanal</div><div class="cs">Março 2025 — por dia</div></div></div>
+        <div class="cw"><canvas id="barC"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Mais Faltas — Março</div></div>
+        <div class="top-absent">
+          <div class="ta-item"><div class="ta-av" style="background:linear-gradient(135deg,#ef4444,#fca5a5)">AS</div><div><div class="ta-name">Ana Silva</div><div class="ta-class">10ª A · Matemática</div></div><span class="ta-count">12 faltas</span></div>
+          <div class="ta-item"><div class="ta-av" style="background:linear-gradient(135deg,#f97316,#fdba74)">RM</div><div><div class="ta-name">Rui Marques</div><div class="ta-class">10ª A · Física</div></div><span class="ta-count">9 faltas</span></div>
+          <div class="ta-item"><div class="ta-av" style="background:linear-gradient(135deg,#f59e0b,#fcd34d)">JJ</div><div><div class="ta-name">Jacob Jones</div><div class="ta-class">11ª B · Química</div></div><span class="ta-count">7 faltas</span></div>
+          <div class="ta-item"><div class="ta-av" style="background:linear-gradient(135deg,#64748b,#94a3b8)">MN</div><div><div class="ta-name">Miguel Neto</div><div class="ta-class">12ª A · Biologia</div></div><span class="ta-count">6 faltas</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Registo de Presenças — Hoje</div><div style="font-size:12px;color:#9ca3af;">01 de Março de 2025</div></div>
+      <div class="controls-row">
+        <select class="ctrl-select"><option>10ª Classe A — Manhã</option><option>10ª Classe B</option><option>11ª Classe A</option></select>
+        <select class="ctrl-select"><option>Matemática</option><option>Português</option><option>Física</option></select>
+        <select class="ctrl-select"><option>Prof. Carlos Mateus</option></select>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:180px;">Aluno</th>
+            <th>Seg 24</th><th>Ter 25</th><th>Qua 26</th><th>Qui 27</th><th>Sex 28</th><th>Seg 03</th><th style="color:#7c3aed;">Hoje 01</th>
+            <th>Total P</th><th>Total F</th><th>Total A</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="av-row"><div class="av">EH</div>Evelyn Harper</div></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-empty"><i class="fa-regular fa-circle"></i></button></td>
+            <td class="total-p">5</td><td class="total-a">1</td><td class="total-l">0</td>
+          </tr>
+          <tr>
+            <td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#f97316,#fb923c)">DP</div>Diana Pinto</div></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-late"><i class="fa-solid fa-clock"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-empty"><i class="fa-regular fa-circle"></i></button></td>
+            <td class="total-p">5</td><td class="total-a">0</td><td class="total-l">1</td>
+          </tr>
+          <tr>
+            <td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#ef4444,#fca5a5)">AS</div>Ana Silva</div></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-absent"><i class="fa-solid fa-xmark"></i></button></td>
+            <td><button class="att-btn att-empty"><i class="fa-regular fa-circle"></i></button></td>
+            <td class="total-p">1</td><td class="total-a">5</td><td class="total-l">0</td>
+          </tr>
+          <tr>
+            <td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">JM</div>João Millar</div></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-late"><i class="fa-solid fa-clock"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-empty"><i class="fa-regular fa-circle"></i></button></td>
+            <td class="total-p">5</td><td class="total-a">0</td><td class="total-l">1</td>
+          </tr>
+          <tr>
+            <td><div class="av-row"><div class="av" style="background:linear-gradient(135deg,#22c55e,#4ade80)">LC</div>Lara Costa</div></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-present"><i class="fa-solid fa-check"></i></button></td>
+            <td><button class="att-btn att-empty"><i class="fa-regular fa-circle"></i></button></td>
+            <td class="total-p">6</td><td class="total-a">0</td><td class="total-l">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+new Chart(document.getElementById('barC'),{type:'bar',data:{labels:['Seg','Ter','Qua','Qui','Sex','Seg','Ter','Qua','Qui','Sex'],datasets:[{label:'Presentes',data:[310,305,318,300,295,312,308,320,315,312],backgroundColor:'#22c55e',borderRadius:4,barPercentage:.5},{label:'Faltas',data:[28,33,20,38,43,26,30,18,23,26],backgroundColor:'#ef4444',borderRadius:4,barPercentage:.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},stacked:false,ticks:{font:{size:10}}},y:{grid:{color:'#f5f5f5'},ticks:{font:{size:10}}}}}});
+</script>
+</body>
+</html>
